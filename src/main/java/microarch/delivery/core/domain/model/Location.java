@@ -8,7 +8,8 @@ import libs.errs.Error;
 import java.util.List;
 
 public final class Location extends ValueObject<Location> {
-    private static final int[] minMaxRange = {1, 10};
+    private static final int MIN_COORDINATE = 1;
+    private static final int MAX_COORDINATE = 10;
 
     private final int coordinate_x;
     private final int coordinate_y;
@@ -19,8 +20,8 @@ public final class Location extends ValueObject<Location> {
     }
 
     public static Result<Location, Error> create(int coordinate_x, int coordinate_y) {
-        var lessMinErrX = Guard.againstOutOfRange(coordinate_x, minMaxRange[0], minMaxRange[1], "coordinate_x");
-        var lessMinErrY = Guard.againstOutOfRange(coordinate_y, minMaxRange[0], minMaxRange[1], "coordinate_y");
+        var lessMinErrX = Guard.againstOutOfRange(coordinate_x, MIN_COORDINATE, MAX_COORDINATE, "coordinate_x");
+        var lessMinErrY = Guard.againstOutOfRange(coordinate_y, MIN_COORDINATE, MAX_COORDINATE, "coordinate_y");
         if (lessMinErrX != null) return Result.failure(lessMinErrX);
         if (lessMinErrY != null) return Result.failure(lessMinErrY);
 
