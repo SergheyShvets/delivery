@@ -28,6 +28,7 @@ public class Assignment extends BaseEntity<UUID> {
     private Status status;
 
     private Assignment(UUID orderId, Volume volume, Location location) {
+        super(UUID.randomUUID());
         this.orderId = orderId;
         this.volume = volume;
         this.location = location;

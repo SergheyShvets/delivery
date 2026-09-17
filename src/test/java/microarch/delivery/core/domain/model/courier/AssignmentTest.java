@@ -29,6 +29,18 @@ public class AssignmentTest {
         assertThat(assignment.checkIfCompleted()).isFalse();
     }
 
+    @Test
+    void shouldBeDifferentWhenCreatedTwoAssignmentWithTheSameParams() {
+        var orderId = UUID.randomUUID();
+        var volume = Volume.mustCreate(5);
+        var location = Location.mustCreate(5, 5);
+
+        var assignment1 = Assignment.create(orderId, volume, location).getValue();
+        var assignment2 = Assignment.create(orderId, volume, location).getValue();
+
+        assertThat(assignment1.equals(assignment2)).isFalse();
+    }
+
 
     @Test
     void shouldBeTrueChangedStatusToComplete() {
@@ -56,7 +68,7 @@ public class AssignmentTest {
     }
 
     @Test
-    void houldBeErrorWhenHasFarLocationToChangedStatusToComplete() {
+    void shouldBeErrorWhenHasFarLocationToChangedStatusToComplete() {
         var assignment = mockResultCreateAssignment().getValue();
 
         assertThat(assignment.checkIfCompleted()).isFalse();
