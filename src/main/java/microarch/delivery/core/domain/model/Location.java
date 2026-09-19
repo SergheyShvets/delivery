@@ -4,6 +4,7 @@ import libs.ddd.ValueObject;
 import libs.errs.Guard;
 import libs.errs.Result;
 import libs.errs.Error;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -11,7 +12,9 @@ public final class Location extends ValueObject<Location> {
     private static final int MIN_COORDINATE = 1;
     private static final int MAX_COORDINATE = 10;
 
+    @Getter
     private final int coordinate_x;
+    @Getter
     private final int coordinate_y;
 
     private Location(int coordinateX, int coordinateY) {
