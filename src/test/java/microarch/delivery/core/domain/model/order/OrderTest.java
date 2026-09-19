@@ -14,75 +14,101 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OrderTest {
 
     @Test
-    void shouldBeCorrectWhenParamsAreCorrectOnCreated() {
-        var orderId = UUID.randomUUID();
+    void shouldBeCorrectWhenParamsAreCorrect() {
+        var basketId = UUID.randomUUID();
+        var deliveryLocation = Location.mustCreate(5, 5);
         var volume = Volume.mustCreate(5);
-        var location = Location.mustCreate(5, 5);
 
-        var result = Assignment.create(orderId, volume, location);
+        var result = Order.create(basketId, deliveryLocation, volume);
 
         assertThat(result.isSuccess()).isTrue();
-        var assignment = result.getValue();
-        assertThat(assignment.getOrderId()).isEqualTo(orderId);
-        assertThat(assignment.getVolume()).isEqualTo(volume);
-        assertThat(assignment.getLocation()).isEqualTo(location);
-        assertThat(assignment.checkIfCompleted()).isFalse();
+        var order = result.getValue();
+        assertThat(order.getId()).isEqualTo(basketId);
+        assertThat(order.getVolume()).isEqualTo(volume);
+        assertThat(order.getDeliveryLocation()).isEqualTo(deliveryLocation);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.Created);
     }
 
     @Test
-    void shouldBeDifferentWhenCreatedTwoAssignmentWithTheSameParams() {
-        var orderId = UUID.randomUUID();
+    void shouldBeErrorToAssignOrderIfStatusIsNotCreated() {
+        var basketId = UUID.randomUUID();
+        var deliveryLocation = Location.mustCreate(5, 5);
         var volume = Volume.mustCreate(5);
-        var location = Location.mustCreate(5, 5);
 
-        var assignment1 = Assignment.create(orderId, volume, location).getValue();
-        var assignment2 = Assignment.create(orderId, volume, location).getValue();
+        var result = Order.create(basketId, deliveryLocation, volume);
+        var order = result.getValue();
+        order.assignOrder();
 
-        assertThat(assignment1.equals(assignment2)).isFalse();
+        //Now status is assigned try to Assigned again
+        assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
+        var errToAssign = order.assignOrder();
+        assertThat(errToAssign.isFailure()).isTrue();
+
+        order.completeOrder();
+
+        ////Now status is Completed try to assign again
+        assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
+        var errToAssign2 = order.assignOrder();
+        assertThat(errToAssign2.isFailure()).isTrue();
     }
 
 
     @Test
-    void shouldBeTrueChangedStatusToComplete() {
-        var assignment = mockResultCreateAssignment().getValue();
-
-        assertThat(assignment.checkIfCompleted()).isFalse();
-
-        var courierLocation = Location.mustCreate(4, 5);
-        assignment.completeAssignment(courierLocation);
-        assertThat(assignment.checkIfCompleted()).isTrue();
-    }
-
-    @Test
-    void shouldBeTrueWhenTryChangeTwoTimesStatusToComplete() {
-        var assignment = mockResultCreateAssignment().getValue();
-
-        assertThat(assignment.checkIfCompleted()).isFalse();
-
-        var courierLocation = Location.mustCreate(4, 5);
-        assignment.completeAssignment(courierLocation);
-        assertThat(assignment.checkIfCompleted()).isTrue();
-
-        assignment.completeAssignment(courierLocation);
-        assertThat(assignment.checkIfCompleted()).isTrue();
-    }
-
-    @Test
-    void shouldBeErrorWhenHasFarLocationToChangedStatusToComplete() {
-        var assignment = mockResultCreateAssignment().getValue();
-
-        assertThat(assignment.checkIfCompleted()).isFalse();
-
-        var courierLocation = Location.mustCreate(4, 4);
-        assignment.completeAssignment(courierLocation);
-        assertThat(assignment.checkIfCompleted()).isFalse();
-    }
-
-    private Result<Assignment, Error> mockResultCreateAssignment() {
-        var orderId = UUID.randomUUID();
+    void shouldBeErrorToCompleteOrderIfStatusIsNotCreated() {
+        var basketId = UUID.randomUUID();
+        var deliveryLocation = Location.mustCreate(5, 5);
         var volume = Volume.mustCreate(5);
-        var location = Location.mustCreate(5, 5);
 
-        return Assignment.create(orderId, volume, location);
+        var result = Order.create(basketId, deliveryLocation, volume);
+        var order = result.getValue();
+
+        //Now status is Created try to assign again
+        assertThat(order.getStatus() == OrderStatus.Created).isTrue();
+        var errToAssign = order.completeOrder();
+        assertThat(errToAssign.isFailure()).isTrue();
+
+        order.assignOrder();
+        order.completeOrder();
+
+        ////Now status is Completed try to assign again
+        assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
+        var errToAssign2 = order.completeOrder();
+        assertThat(errToAssign2.isFailure()).isTrue();
+    }
+
+    @Test
+    void shouldBeTrueWhenChangeStatusCorrectly() {
+        var basketId = UUID.randomUUID();
+        var deliveryLocation = Location.mustCreate(5, 5);
+        var volume = Volume.mustCreate(5);
+
+        var result = Order.create(basketId, deliveryLocation, volume);
+        var order = result.getValue();
+
+        //Now status is Created try to assign again
+        assertThat(order.getStatus() == OrderStatus.Created).isTrue();
+        var assignOkRes = order.assignOrder();
+        assertThat(assignOkRes.isSuccess()).isTrue();
+
+
+        ////Now status is Assigned try to assign again
+        assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
+        var completeOkRes = order.completeOrder();
+        assertThat(completeOkRes.isSuccess()).isTrue();
+    }
+
+    @Test
+    void shouldBeDifferentTwoCreatedOrdersWithDifferentId() {
+        var basketId1 = UUID.randomUUID();
+        var basketId2 = UUID.randomUUID();
+        var deliveryLocation = Location.mustCreate(5, 5);
+        var volume = Volume.mustCreate(5);
+
+        var result1 = Order.create(basketId1, deliveryLocation, volume);
+        var result2 = Order.create(basketId2, deliveryLocation, volume);
+        var order1 = result1.getValue();
+        var order2 = result2.getValue();
+
+        assertThat(order1.equals(order2)).isFalse();
     }
 }

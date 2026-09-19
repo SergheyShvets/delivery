@@ -10,6 +10,7 @@ import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 import microarch.delivery.core.domain.model.order.Order;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -24,8 +25,7 @@ public class Courier extends Aggregate<UUID> {
     @Getter
     private Location location;
 
-    @Getter
-    private Set<Assignment> assignments;
+    private Set<Assignment> assignments = new HashSet<>();
 
     private Courier(String name, Location location) {
         super(UUID.randomUUID());
@@ -41,8 +41,8 @@ public class Courier extends Aggregate<UUID> {
     }
 
     public UnitResult<Error> addOrder(Order order) {
-        var currentvalue = assignments.stream().mapToInt(a -> a.getVolume().getValue()).sum();
-        var valueWithNewOrder = currentvalue + order.getVolume().getValue();
+        var currentValue = assignments.stream().mapToInt(a -> a.getVolume().getValue()).sum();
+        var valueWithNewOrder = currentValue + order.getVolume().getValue();
 
         if (valueWithNewOrder > maxVolume.getValue())
             return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("valueWithNewOrder", valueWithNewOrder, maxVolume.getValue()));
