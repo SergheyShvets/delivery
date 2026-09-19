@@ -42,7 +42,7 @@ public class CourierTest {
     }
 
     @Test
-    void shouldBeErrorAddOrderCIfIsFull() {
+    void shouldBeErrorAddOrderIfIsFull() {
         //Limit 20
         var order1 = createOrder(5);
         var order2 = createOrder(16);
@@ -53,11 +53,15 @@ public class CourierTest {
         var result = Courier.create(name, location);
         var courier = result.getValue();
 
+        //Add first order
         var addOrderRes = courier.addOrder(order1);
-        var errAddOrderRes = courier.addOrder(order2);
-
         assertThat(addOrderRes.isSuccess()).isTrue();
+        assertThat(courier.getAssignments().size()).isEqualTo(1);
+
+        //Not added second order because is more than max courier volume
+        var errAddOrderRes = courier.addOrder(order2);
         assertThat(errAddOrderRes.isFailure()).isTrue();
+        assertThat(courier.getAssignments().size()).isNotEqualTo(2);
     }
 
 
@@ -125,7 +129,7 @@ public class CourierTest {
         var courier = result.getValue();
         courier.addOrder(order);
 
-        //In Start courier is far from assign
+        //In Start courier 1,1 is far from assign
         var errCloseAssigned = courier.closeAssigned(order.getId());
         assertThat(errCloseAssigned.isFailure()).isTrue();
 

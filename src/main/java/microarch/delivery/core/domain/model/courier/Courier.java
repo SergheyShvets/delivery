@@ -25,6 +25,7 @@ public class Courier extends Aggregate<UUID> {
     @Getter
     private Location location;
 
+    @Getter
     private Set<Assignment> assignments = new HashSet<>();
 
     private Courier(String name, Location location) {

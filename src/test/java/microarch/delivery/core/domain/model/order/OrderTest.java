@@ -54,7 +54,7 @@ public class OrderTest {
 
 
     @Test
-    void shouldBeErrorToCompleteOrderIfStatusIsNotCreated() {
+    void shouldBeErrorToCompleteOrderIfStatusIsNotAssigned() {
         var basketId = UUID.randomUUID();
         var deliveryLocation = Location.mustCreate(5, 5);
         var volume = Volume.mustCreate(5);
