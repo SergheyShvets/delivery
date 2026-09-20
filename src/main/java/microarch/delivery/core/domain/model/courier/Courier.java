@@ -8,16 +8,15 @@ import libs.errs.UnitResult;
 import lombok.Getter;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
-import microarch.delivery.core.domain.model.order.Order;
-
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import static libs.errs.Guard.againstGreaterThan;
 
 public class Courier extends Aggregate<UUID> {
+    private static final int MAX_STEPS_TO_MOVE = 1;
 
     private final Volume maxVolume = Volume.mustCreate(20);
+
+    private final Set<Assignment> assignments = new HashSet<>();
 
     @Getter
     private final String name;
@@ -25,8 +24,6 @@ public class Courier extends Aggregate<UUID> {
     @Getter
     private Location location;
 
-    @Getter
-    private Set<Assignment> assignments = new HashSet<>();
 
     private Courier(String name, Location location) {
         super(UUID.randomUUID());
@@ -41,23 +38,30 @@ public class Courier extends Aggregate<UUID> {
         return Result.success(new Courier(name, location));
     }
 
-    public UnitResult<Error> addOrder(Order order) {
-        var currentValue = assignments.stream().mapToInt(a -> a.getVolume().getValue()).sum();
-        var valueWithNewOrder = currentValue + order.getVolume().getValue();
+    public Assignment[] getAssignments() {
+        return assignments.toArray(Assignment[]::new);
+    }
 
-        if (valueWithNewOrder > maxVolume.getValue())
-            return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("valueWithNewOrder", valueWithNewOrder, maxVolume.getValue()));
+    public UnitResult<Error> addOrder(UUID orderId, Volume newVolume, Location deliveryLocation) {
+        Volume[] currentVolumes = assignments.stream().map(Assignment::getVolume).toArray(Volume[]::new);
+        var volumeWithNewOrderRes = newVolume.addAndCreate(currentVolumes);
+        if (volumeWithNewOrderRes.isFailure())
+            return UnitResult.failure(volumeWithNewOrderRes.getError());
 
-        var newAssigned = Assignment.create(order.getId(), order.getVolume(), order.getDeliveryLocation());
+        var volumeWithNewOrder = volumeWithNewOrderRes.getValue();
+        if (maxVolume.compareTo(volumeWithNewOrder) < 0)
+            return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("volumeWithNewOrder", volumeWithNewOrder.getValue(), maxVolume.getValue()));
+
+        var newAssigned = Assignment.create(orderId, newVolume, deliveryLocation);
         if (newAssigned.isFailure())
-            return UnitResult.failure(GeneralErrors.valueIsInvalid("order", order));
+            return UnitResult.failure(GeneralErrors.valueIsInvalid("newAssigned", newAssigned));
 
         assignments.add(newAssigned.getValue());
         return UnitResult.success();
     }
 
     public UnitResult<Error> closeAssigned(UUID orderId) {
-        var assignmentToClose = assignments.stream().filter(a -> a.getOrderId() == orderId && !a.checkIfCompleted())
+        var assignmentToClose = assignments.stream().filter(a -> orderId.equals(a.getOrderId()) && !a.checkIfCompleted())
                 .findFirst()
                 .orElse(null);
 
@@ -67,30 +71,17 @@ public class Courier extends Aggregate<UUID> {
         return assignmentToClose.completeAssignment(location);
     }
 
-    public UnitResult<Error> moveUp() {
-        return setNewLocation(location.getCoordinate_x(), location.getCoordinate_y() + 1);
-    }
+    public UnitResult<Error> setNewLocation(int coordinate_x, int coordinate_y) {
+        var newLocationRes = Location.create(coordinate_x, coordinate_y);
+        if (newLocationRes.isFailure())
+            return UnitResult.failure(newLocationRes.getError());
 
-    public UnitResult<Error> moveDown() {
-        return setNewLocation(location.getCoordinate_x(), location.getCoordinate_y() - 1);
+        var newLocation = newLocationRes.getValue();
+        var steps = location.countStepsTo(newLocation);
+        var cannotMoveErr = againstGreaterThan(steps, MAX_STEPS_TO_MOVE, "location");
+        if (cannotMoveErr != null) return UnitResult.failure(cannotMoveErr);
 
-    }
-
-    public UnitResult<Error> moveLeft() {
-        return setNewLocation(location.getCoordinate_x() - 1, location.getCoordinate_y());
-
-    }
-
-    public UnitResult<Error> moveRight() {
-        return setNewLocation(location.getCoordinate_x() + 1, location.getCoordinate_y());
-    }
-
-    private UnitResult<Error> setNewLocation(int coordinate_x, int coordinate_y) {
-        var result = Location.create(coordinate_x, coordinate_y);
-        if (result.isFailure())
-            return UnitResult.failure(result.getError());
-
-        location = result.getValue();
+        location = newLocation;
         return UnitResult.success();
     }
 }
