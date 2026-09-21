@@ -1,9 +1,8 @@
 package microarch.delivery.core.domain.model;
 
 import libs.ddd.ValueObject;
+import libs.errs.*;
 import libs.errs.Error;
-import libs.errs.Guard;
-import libs.errs.Result;
 import lombok.Getter;
 
 import java.util.List;
@@ -23,6 +22,17 @@ public class Volume extends ValueObject<Volume> {
         if (lessMinErr != null) return Result.failure(lessMinErr);
 
         return Result.success(new Volume(value));
+    }
+
+    public Result<Volume, Error> addAndCreate(Volume... newVolumes) {
+        var sum = value;
+        for (Volume newVolume : newVolumes) {
+            if (newVolume == null)
+                return Result.failure(GeneralErrors.valueIsInvalid("newVolumes", newVolumes));
+            sum += newVolume.getValue();
+        }
+
+        return Result.success(new Volume(sum));
     }
 
     public static Volume mustCreate(int value) {
