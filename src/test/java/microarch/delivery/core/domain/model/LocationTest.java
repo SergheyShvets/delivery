@@ -12,11 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LocationTest {
 
     static Stream<Arguments> invalidLessMinCoordinates() {
-        return Stream.of(
-                Arguments.of(0, 2),
-                Arguments.of(6, 0),
-                Arguments.of(-3, -1)
-        );
+        return Stream.of(Arguments.of(0, 2), Arguments.of(6, 0), Arguments.of(-3, -1));
     }
 
     @ParameterizedTest
@@ -27,11 +23,7 @@ public class LocationTest {
     }
 
     static Stream<Arguments> invalidMoreMaxCoordinates() {
-        return Stream.of(
-                Arguments.of(1, 11),
-                Arguments.of(11, 5),
-                Arguments.of(123, 11)
-        );
+        return Stream.of(Arguments.of(1, 11), Arguments.of(11, 5), Arguments.of(123, 11));
     }
 
     @ParameterizedTest
@@ -42,11 +34,7 @@ public class LocationTest {
     }
 
     static Stream<Arguments> validCoordinates() {
-        return Stream.of(
-                Arguments.of(2, 5),
-                Arguments.of(1, 1),
-                Arguments.of(10, 10)
-        );
+        return Stream.of(Arguments.of(2, 5), Arguments.of(1, 1), Arguments.of(10, 10));
     }
 
     @ParameterizedTest
@@ -67,18 +55,16 @@ public class LocationTest {
         assertThat(firstLocation.equals(secondLocation)).isTrue();
     }
 
-
     static Stream<Arguments> locationsAndSteps() {
-        return Stream.of(
-                Arguments.of(Location.mustCreate(1, 1), Location.mustCreate(10, 10), 18),
+        return Stream.of(Arguments.of(Location.mustCreate(1, 1), Location.mustCreate(10, 10), 18),
                 Arguments.of(Location.mustCreate(10, 10), Location.mustCreate(1, 1), 18),
-                Arguments.of(Location.mustCreate(2, 5), Location.mustCreate(2, 5), 0)
-        );
+                Arguments.of(Location.mustCreate(2, 5), Location.mustCreate(2, 5), 0));
     }
 
     @ParameterizedTest
     @MethodSource("locationsAndSteps")
-    void shouldBeCorrectWhenCountStepsBetweenLocations(Location firstLocation, Location secondLocation, int correctSteps) {
+    void shouldBeCorrectWhenCountStepsBetweenLocations(Location firstLocation, Location secondLocation,
+            int correctSteps) {
         assertThat(firstLocation.countStepsTo(secondLocation) == correctSteps).isTrue();
     }
 }

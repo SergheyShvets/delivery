@@ -25,8 +25,10 @@ public final class Location extends ValueObject<Location> {
     public static Result<Location, Error> create(int coordinate_x, int coordinate_y) {
         var lessMinErrX = Guard.againstOutOfRange(coordinate_x, MIN_COORDINATE, MAX_COORDINATE, "coordinate_x");
         var lessMinErrY = Guard.againstOutOfRange(coordinate_y, MIN_COORDINATE, MAX_COORDINATE, "coordinate_y");
-        if (lessMinErrX != null) return Result.failure(lessMinErrX);
-        if (lessMinErrY != null) return Result.failure(lessMinErrY);
+        if (lessMinErrX != null)
+            return Result.failure(lessMinErrX);
+        if (lessMinErrY != null)
+            return Result.failure(lessMinErrY);
 
         return Result.success(new Location(coordinate_x, coordinate_y));
     }
@@ -40,7 +42,6 @@ public final class Location extends ValueObject<Location> {
         int verticalSteps = Math.abs(otherLocation.coordinate_y - this.coordinate_y);
         return horizontalSteps + verticalSteps;
     }
-
 
     @Override
     protected Iterable<Object> equalityComponents() {

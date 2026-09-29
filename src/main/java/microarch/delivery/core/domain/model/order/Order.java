@@ -12,7 +12,6 @@ import microarch.delivery.core.domain.model.Volume;
 import java.util.Objects;
 import java.util.UUID;
 
-
 public class Order extends Aggregate<UUID> {
 
     @Getter

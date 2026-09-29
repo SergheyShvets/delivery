@@ -39,19 +39,18 @@ public class OrderTest {
         var order = result.getValue();
         order.assignOrder();
 
-        //Now status is assigned try to Assigned again
+        // Now status is assigned try to Assigned again
         assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
         var errToAssign = order.assignOrder();
         assertThat(errToAssign.isFailure()).isTrue();
 
         order.completeOrder();
 
-        ////Now status is Completed try to assign again
+        //// Now status is Completed try to assign again
         assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
         var errToAssign2 = order.assignOrder();
         assertThat(errToAssign2.isFailure()).isTrue();
     }
-
 
     @Test
     void shouldBeErrorToCompleteOrderIfStatusIsNotAssigned() {
@@ -62,7 +61,7 @@ public class OrderTest {
         var result = Order.create(basketId, deliveryLocation, volume);
         var order = result.getValue();
 
-        //Now status is Created try to assign again
+        // Now status is Created try to assign again
         assertThat(order.getStatus() == OrderStatus.Created).isTrue();
         var errToAssign = order.completeOrder();
         assertThat(errToAssign.isFailure()).isTrue();
@@ -70,7 +69,7 @@ public class OrderTest {
         order.assignOrder();
         order.completeOrder();
 
-        ////Now status is Completed try to assign again
+        //// Now status is Completed try to assign again
         assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
         var errToAssign2 = order.completeOrder();
         assertThat(errToAssign2.isFailure()).isTrue();
@@ -85,13 +84,12 @@ public class OrderTest {
         var result = Order.create(basketId, deliveryLocation, volume);
         var order = result.getValue();
 
-        //Now status is Created try to assign again
+        // Now status is Created try to assign again
         assertThat(order.getStatus() == OrderStatus.Created).isTrue();
         var assignOkRes = order.assignOrder();
         assertThat(assignOkRes.isSuccess()).isTrue();
 
-
-        ////Now status is Assigned try to assign again
+        //// Now status is Assigned try to assign again
         assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
         var completeOkRes = order.completeOrder();
         assertThat(completeOkRes.isSuccess()).isTrue();

@@ -46,7 +46,8 @@ public class Assignment extends BaseEntity<UUID> {
     public UnitResult<Error> completeAssignment(Location location) {
         var steps = this.location.countStepsTo(location);
         var cannotCompleteErr = againstGreaterThan(steps, MAX_STEPS_TO_COMPLETE, "location");
-        if (cannotCompleteErr != null) return UnitResult.failure(cannotCompleteErr);
+        if (cannotCompleteErr != null)
+            return UnitResult.failure(cannotCompleteErr);
         this.status = Status.Completed;
         return UnitResult.success();
     }
@@ -56,7 +57,6 @@ public class Assignment extends BaseEntity<UUID> {
     }
 
     private enum Status {
-        Assigned,
-        Completed;
+        Assigned, Completed;
     }
 }

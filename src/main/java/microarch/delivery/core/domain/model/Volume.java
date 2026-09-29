@@ -19,7 +19,8 @@ public class Volume extends ValueObject<Volume> {
 
     public static Result<Volume, Error> create(int value) {
         var lessMinErr = Guard.againstLessOrEqual(value, MIN_VALUE, "Volume");
-        if (lessMinErr != null) return Result.failure(lessMinErr);
+        if (lessMinErr != null)
+            return Result.failure(lessMinErr);
 
         return Result.success(new Volume(value));
     }

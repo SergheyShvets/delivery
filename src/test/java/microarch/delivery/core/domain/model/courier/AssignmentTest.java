@@ -41,7 +41,6 @@ public class AssignmentTest {
         assertThat(assignment1.equals(assignment2)).isFalse();
     }
 
-
     @Test
     void shouldBeTrueChangedStatusToComplete() {
         var assignment = mockResultCreateAssignment().getValue();

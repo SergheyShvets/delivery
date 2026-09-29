@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-
 public class OrderAllocationServiceImpl implements OrderAllocationService {
 
     @Override
     public UnitResult<Error> allocateOrder(Order order, Courier... couriers) {
         Objects.requireNonNull(order, "order");
         Objects.requireNonNull(couriers, "couriers");
-        if (couriers.length == 0) return UnitResult.failure(GeneralErrors.valueIsRequired("courier list is empty"));
+        if (couriers.length == 0)
+            return UnitResult.failure(GeneralErrors.valueIsRequired("courier list is empty"));
 
         var sortedCouriers = sortCouriersByDistant(order, couriers);
         for (Courier sortedCourier : sortedCouriers) {
@@ -32,6 +32,8 @@ public class OrderAllocationServiceImpl implements OrderAllocationService {
 
     private Courier[] sortCouriersByDistant(Order order, Courier... couriers) {
         var deliveryLocation = order.getDeliveryLocation();
-        return Arrays.stream(couriers).sorted(Comparator.comparingInt((Courier c) -> deliveryLocation.countStepsTo(c.getLocation()))).toArray(Courier[]::new);
+        return Arrays.stream(couriers)
+                .sorted(Comparator.comparingInt((Courier c) -> deliveryLocation.countStepsTo(c.getLocation())))
+                .toArray(Courier[]::new);
     }
 }

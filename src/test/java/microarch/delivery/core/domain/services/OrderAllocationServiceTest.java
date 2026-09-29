@@ -18,7 +18,7 @@ public class OrderAllocationServiceTest {
     void shouldBeErrorIfCourierListIsEmpty() {
         var allocatedService = new OrderAllocationServiceImpl();
         Order order = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(5));
-        Courier[] emptyCourierList = new Courier[]{};
+        Courier[] emptyCourierList = new Courier[] {};
 
         var result = allocatedService.allocateOrder(order, emptyCourierList);
         assertThat(result.isFailure()).isTrue();
@@ -28,15 +28,11 @@ public class OrderAllocationServiceTest {
     void shouldBeErrorIfOrderStatusIsNotCreated() {
         var allocatedService = new OrderAllocationServiceImpl();
         Order order = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(5));
-        Courier[] couriers = createRandomCouriersByLocation(
-                Location.mustCreate(5, 5),
-                Location.mustCreate(5, 4)
-        );
+        Courier[] couriers = createRandomCouriersByLocation(Location.mustCreate(5, 5), Location.mustCreate(5, 4));
 
         // change status for order
         var assignOrderRes = order.assignOrder();
         assertThat(assignOrderRes.isSuccess()).isTrue();
-
 
         var result = allocatedService.allocateOrder(order, couriers);
         assertThat(result.isFailure()).isTrue();
@@ -46,16 +42,14 @@ public class OrderAllocationServiceTest {
     void shouldBeErrorIfCouriersDontHaveVolume() {
         var allocatedService = new OrderAllocationServiceImpl();
         Order order = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(5));
-        Courier[] couriers = createRandomCouriersByLocation(
-                Location.mustCreate(5, 5),
-                Location.mustCreate(5, 4),
-                Location.mustCreate(9, 9)
-        );
+        Courier[] couriers = createRandomCouriersByLocation(Location.mustCreate(5, 5), Location.mustCreate(5, 4),
+                Location.mustCreate(9, 9));
 
-        //couriers gets heavy orders
+        // couriers gets heavy orders
         for (Courier courier : couriers) {
-           var  heavyOrder = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(19));
-           var addingHeavyOrderRes = courier.addOrder(heavyOrder.getId(),heavyOrder.getVolume(),heavyOrder.getDeliveryLocation());
+            var heavyOrder = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(19));
+            var addingHeavyOrderRes = courier.addOrder(heavyOrder.getId(), heavyOrder.getVolume(),
+                    heavyOrder.getDeliveryLocation());
             assertThat(addingHeavyOrderRes.isSuccess()).isTrue();
         }
 
@@ -67,11 +61,8 @@ public class OrderAllocationServiceTest {
     void shouldBeSuccessIfFindCourier() {
         var allocatedService = new OrderAllocationServiceImpl();
         Order order = createOrder(Location.mustCreate(5, 5), Volume.mustCreate(5));
-        Courier[] couriers = createRandomCouriersByLocation(
-                Location.mustCreate(1, 1),
-                Location.mustCreate(5, 4),
-                Location.mustCreate(9, 9)
-        );
+        Courier[] couriers = createRandomCouriersByLocation(Location.mustCreate(1, 1), Location.mustCreate(5, 4),
+                Location.mustCreate(9, 9));
 
         var result = allocatedService.allocateOrder(order, couriers);
         assertThat(result.isSuccess()).isTrue();
@@ -80,16 +71,16 @@ public class OrderAllocationServiceTest {
         assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
     }
 
-
     private Order createOrder(Location deliveryLocation, Volume volume) {
         return Order.create(UUID.randomUUID(), deliveryLocation, volume).getValueOrThrow();
     }
 
     private Courier[] createRandomCouriersByLocation(Location... locations) {
-        return Arrays.stream(locations).map(
-                a -> Courier.create(someNames[ThreadLocalRandom.current().nextInt(someNames.length)], a).getValueOrThrow()
-        ).toArray(Courier[]::new);
+        return Arrays
+                .stream(locations).map(a -> Courier
+                        .create(someNames[ThreadLocalRandom.current().nextInt(someNames.length)], a).getValueOrThrow())
+                .toArray(Courier[]::new);
     }
 
-    private static String[] someNames = new String[]{"Иван", "Олег", "Виктор", "Петя", "Настя", "Дима"};
+    private static String[] someNames = new String[] { "Иван", "Олег", "Виктор", "Петя", "Настя", "Дима" };
 }
