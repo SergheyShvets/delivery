@@ -68,7 +68,7 @@ public class OrderAllocationServiceTest {
         assertThat(result.isSuccess()).isTrue();
         var courierWithOrder = couriers[1];
         assertThat(courierWithOrder.getAssignments().length == 1).isTrue();
-        assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
+        assertThat(order.getStatus() == OrderStatus.ASSIGNED).isTrue();
     }
 
     private Order createOrder(Location deliveryLocation, Volume volume) {

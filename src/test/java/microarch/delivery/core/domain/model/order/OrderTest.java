@@ -1,10 +1,7 @@
 package microarch.delivery.core.domain.model.order;
 
-import libs.errs.Error;
-import libs.errs.Result;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
-import microarch.delivery.core.domain.model.courier.Assignment;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -26,7 +23,7 @@ public class OrderTest {
         assertThat(order.getId()).isEqualTo(basketId);
         assertThat(order.getVolume()).isEqualTo(volume);
         assertThat(order.getDeliveryLocation()).isEqualTo(deliveryLocation);
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.Created);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
     }
 
     @Test
@@ -40,14 +37,14 @@ public class OrderTest {
         order.assignOrder();
 
         // Now status is assigned try to Assigned again
-        assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
+        assertThat(order.getStatus() == OrderStatus.ASSIGNED).isTrue();
         var errToAssign = order.assignOrder();
         assertThat(errToAssign.isFailure()).isTrue();
 
         order.completeOrder();
 
         //// Now status is Completed try to assign again
-        assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
+        assertThat(order.getStatus() == OrderStatus.COMPLETED).isTrue();
         var errToAssign2 = order.assignOrder();
         assertThat(errToAssign2.isFailure()).isTrue();
     }
@@ -62,7 +59,7 @@ public class OrderTest {
         var order = result.getValue();
 
         // Now status is Created try to assign again
-        assertThat(order.getStatus() == OrderStatus.Created).isTrue();
+        assertThat(order.getStatus() == OrderStatus.CREATED).isTrue();
         var errToAssign = order.completeOrder();
         assertThat(errToAssign.isFailure()).isTrue();
 
@@ -70,7 +67,7 @@ public class OrderTest {
         order.completeOrder();
 
         //// Now status is Completed try to assign again
-        assertThat(order.getStatus() == OrderStatus.Completed).isTrue();
+        assertThat(order.getStatus() == OrderStatus.COMPLETED).isTrue();
         var errToAssign2 = order.completeOrder();
         assertThat(errToAssign2.isFailure()).isTrue();
     }
@@ -85,12 +82,12 @@ public class OrderTest {
         var order = result.getValue();
 
         // Now status is Created try to assign again
-        assertThat(order.getStatus() == OrderStatus.Created).isTrue();
+        assertThat(order.getStatus() == OrderStatus.CREATED).isTrue();
         var assignOkRes = order.assignOrder();
         assertThat(assignOkRes.isSuccess()).isTrue();
 
         //// Now status is Assigned try to assign again
-        assertThat(order.getStatus() == OrderStatus.Assigned).isTrue();
+        assertThat(order.getStatus() == OrderStatus.ASSIGNED).isTrue();
         var completeOkRes = order.completeOrder();
         assertThat(completeOkRes.isSuccess()).isTrue();
     }

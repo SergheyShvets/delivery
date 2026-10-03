@@ -1,9 +1,7 @@
 package microarch.delivery.adapters.out.postgres;
 
-import microarch.delivery.core.domain.model.courier.Courier;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
-import microarch.delivery.core.ports.CourierRepository;
 import microarch.delivery.core.ports.OrderRepository;
 
 import org.springframework.stereotype.Repository;
@@ -41,11 +39,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Optional<Order> getOneWithStateCreated() {
-        return jpa.findFirstByStatus(OrderStatus.Created);
+        return jpa.findFirstByStatus(OrderStatus.CREATED);
     }
 
     @Override
     public List<Order> getAllWithStateAssigned() {
-        return jpa.findAllByStatus(OrderStatus.Assigned);
+        return jpa.findAllByStatus(OrderStatus.ASSIGNED);
     }
 }

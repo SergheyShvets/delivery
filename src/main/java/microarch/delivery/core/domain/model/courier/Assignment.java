@@ -1,10 +1,15 @@
 package microarch.delivery.core.domain.model.courier;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.persistence.*;
 import libs.ddd.BaseEntity;
 import libs.errs.Error;
 import libs.errs.Result;
 import libs.errs.UnitResult;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 
@@ -13,18 +18,24 @@ import java.util.UUID;
 
 import static libs.errs.Guard.againstGreaterThan;
 
+@Entity
+@Table(name = "assignments")
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@Getter
 public class Assignment extends BaseEntity<UUID> {
     private static final int MAX_STEPS_TO_COMPLETE = 1;
 
-    @Getter
+    @Column(name = "order_id")
     private final UUID orderId;
 
-    @Getter
+    @Embedded
     private final Volume volume;
 
-    @Getter
+    @Embedded
     private final Location location;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
 
     private Assignment(UUID orderId, Volume volume, Location location) {
@@ -32,7 +43,7 @@ public class Assignment extends BaseEntity<UUID> {
         this.orderId = orderId;
         this.volume = volume;
         this.location = location;
-        this.status = Status.Assigned;
+        this.status = Status.ASSIGNED;
     }
 
     public static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
@@ -48,15 +59,25 @@ public class Assignment extends BaseEntity<UUID> {
         var cannotCompleteErr = againstGreaterThan(steps, MAX_STEPS_TO_COMPLETE, "location");
         if (cannotCompleteErr != null)
             return UnitResult.failure(cannotCompleteErr);
-        this.status = Status.Completed;
+        this.status = Status.COMPLETED;
         return UnitResult.success();
     }
 
     public Boolean checkIfCompleted() {
-        return status == Status.Completed;
+        return status == Status.COMPLETED;
     }
 
     private enum Status {
-        Assigned, Completed;
+        ASSIGNED, COMPLETED;
+
+        @JsonCreator
+        public static Status fromValue(String value) {
+            return Status.valueOf(value.toUpperCase());
+        }
+
+        @JsonValue
+        public String toValue() {
+            return name().toLowerCase();
+        }
     }
 }
