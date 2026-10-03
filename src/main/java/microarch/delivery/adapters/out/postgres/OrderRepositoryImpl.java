@@ -24,12 +24,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean update(Order order) {
+    public void update(Order order) {
         if (jpa.existsById(order.getId())) {
             jpa.save(order);
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> getAllWithStateAssigned() {
-        return jpa.findAllByStatus(OrderStatus.ASSIGNED);
+    public List<Order> getAllByStatuses(OrderStatus... statuses) {
+        return jpa.findAllByStatuses(statuses);
     }
 }

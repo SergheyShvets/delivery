@@ -3,6 +3,7 @@ package microarch.delivery.core.application.commands;
 import jakarta.transaction.Transactional;
 import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
+import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.ports.OrderRepository;
@@ -24,18 +25,18 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
     @Transactional
     public Result<UUID, Error> handle(CreateOrderCommand command) {
         var orderOpt = orderRepository.findById(command.getBasketId());
-        if (orderOpt.isEmpty()) {
-            var orderResult = Order.create(command.getBasketId(), command.getDeliveryLocale(), command.getVolume());
-            if (orderResult.isFailure()) {
-                return Result.failure(orderResult.getError());
-            }
-
-            var order = orderResult.getValue();
-            orderRepository.save(order);
-            domainEventPublisher.publish(List.of(order));
-            return Result.success(orderResult.getValue().getId());
+        if (orderOpt.isPresent()) {
+            return Result.failure(GeneralErrors.valueIsInvalid("order is exist", command.getBasketId()));
         }
 
-        return Result.success(orderOpt.get().getId());
+        var orderResult = Order.create(command.getBasketId(), command.getDeliveryLocation(), command.getVolume());
+        if (orderResult.isFailure()) {
+            return Result.failure(orderResult.getError());
+        }
+        var order = orderResult.getValue();
+
+        orderRepository.save(order);
+        domainEventPublisher.publish(List.of(order));
+        return Result.success(orderResult.getValue().getId());
     }
 }

@@ -85,12 +85,11 @@ public class Courier extends Aggregate<UUID> {
         return assignmentToClose.completeAssignment(location);
     }
 
-    public UnitResult<Error> setNewLocation(int coordinate_x, int coordinate_y) {
-        var newLocationRes = Location.create(coordinate_x, coordinate_y);
-        if (newLocationRes.isFailure())
-            return UnitResult.failure(newLocationRes.getError());
+    public UnitResult<Error> setNewLocation(Location newLocation) {
+        if (newLocation == null) {
+            return UnitResult.failure(GeneralErrors.valueIsRequired("newLocation"));
+        }
 
-        var newLocation = newLocationRes.getValue();
         var steps = location.countStepsTo(newLocation);
         var cannotMoveErr = againstGreaterThan(steps, MAX_STEPS_TO_MOVE, "location");
         if (cannotMoveErr != null)

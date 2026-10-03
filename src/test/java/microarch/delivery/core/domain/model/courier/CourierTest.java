@@ -107,7 +107,7 @@ public class CourierTest {
         var result = Courier.create(name, location);
         var courier = result.getValue();
 
-        var errCloseAssigned = courier.setNewLocation(farLocation.getCoordinate_x(), farLocation.getCoordinate_y());
+        var errCloseAssigned = courier.setNewLocation(farLocation);
         assertThat(errCloseAssigned.isFailure()).isTrue();
     }
 
@@ -171,23 +171,22 @@ public class CourierTest {
     }
 
     private UnitResult<libs.errs.Error> moveUp(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x(),
-                courier.getLocation().getCoordinate_y() + 1);
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() + 1).getValue();
+        return courier.setNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveDown(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x(),
-                courier.getLocation().getCoordinate_y() - 1);
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() - 1).getValue();
+        return courier.setNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveLeft(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x() - 1,
-                courier.getLocation().getCoordinate_y());
-
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x() - 1, courier.getLocation().getCoordinate_y()).getValue();
+        return courier.setNewLocation(newLocation);
     }
 
     private UnitResult<Error> moveRight(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x() + 1,
-                courier.getLocation().getCoordinate_y());
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x() + 1, courier.getLocation().getCoordinate_y()).getValue();
+        return courier.setNewLocation(newLocation);
     }
 }
