@@ -1,25 +1,31 @@
 package microarch.delivery.core.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
 import libs.errs.*;
 import libs.errs.Error;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Embeddable
+@Getter
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Volume extends ValueObject<Volume> {
     private static final int MIN_VALUE = 0;
 
-    @Getter
+    @Column(name = "volume")
     private final int value;
-
-    private Volume(int value) {
-        this.value = value;
-    }
 
     public static Result<Volume, Error> create(int value) {
         var lessMinErr = Guard.againstLessOrEqual(value, MIN_VALUE, "Volume");
-        if (lessMinErr != null) return Result.failure(lessMinErr);
+        if (lessMinErr != null)
+            return Result.failure(lessMinErr);
 
         return Result.success(new Volume(value));
     }

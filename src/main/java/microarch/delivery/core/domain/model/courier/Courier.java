@@ -1,29 +1,43 @@
 package microarch.delivery.core.domain.model.courier;
 
+import jakarta.persistence.*;
 import libs.ddd.Aggregate;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import libs.errs.UnitResult;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 import java.util.*;
 import static libs.errs.Guard.againstGreaterThan;
 
+@Entity
+@Table(name = "couriers")
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Courier extends Aggregate<UUID> {
     private static final int MAX_STEPS_TO_MOVE = 1;
 
+    @Transient
     private final Volume maxVolume = Volume.mustCreate(20);
 
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    @JoinColumn(name = "courier_id", nullable = false)
     private final Set<Assignment> assignments = new HashSet<>();
 
     @Getter
+    @Column(name = "name")
     private final String name;
 
     @Getter
+    @Embedded
     private Location location;
-
 
     private Courier(String name, Location location) {
         super(UUID.randomUUID());
@@ -50,7 +64,8 @@ public class Courier extends Aggregate<UUID> {
 
         var volumeWithNewOrder = volumeWithNewOrderRes.getValue();
         if (maxVolume.compareTo(volumeWithNewOrder) < 0)
-            return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("volumeWithNewOrder", volumeWithNewOrder.getValue(), maxVolume.getValue()));
+            return UnitResult.failure(GeneralErrors.valueMustBeLessOrEqual("volumeWithNewOrder",
+                    volumeWithNewOrder.getValue(), maxVolume.getValue()));
 
         var newAssigned = Assignment.create(orderId, newVolume, deliveryLocation);
         if (newAssigned.isFailure())
@@ -61,9 +76,8 @@ public class Courier extends Aggregate<UUID> {
     }
 
     public UnitResult<Error> closeAssigned(UUID orderId) {
-        var assignmentToClose = assignments.stream().filter(a -> orderId.equals(a.getOrderId()) && !a.checkIfCompleted())
-                .findFirst()
-                .orElse(null);
+        var assignmentToClose = assignments.stream()
+                .filter(a -> orderId.equals(a.getOrderId()) && !a.checkIfCompleted()).findFirst().orElse(null);
 
         if (assignmentToClose == null)
             return UnitResult.failure(GeneralErrors.valueIsInvalid("orderId", orderId));
@@ -79,7 +93,8 @@ public class Courier extends Aggregate<UUID> {
         var newLocation = newLocationRes.getValue();
         var steps = location.countStepsTo(newLocation);
         var cannotMoveErr = againstGreaterThan(steps, MAX_STEPS_TO_MOVE, "location");
-        if (cannotMoveErr != null) return UnitResult.failure(cannotMoveErr);
+        if (cannotMoveErr != null)
+            return UnitResult.failure(cannotMoveErr);
 
         location = newLocation;
         return UnitResult.success();

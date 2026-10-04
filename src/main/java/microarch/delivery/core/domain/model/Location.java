@@ -1,32 +1,39 @@
 package microarch.delivery.core.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
 import libs.errs.Guard;
 import libs.errs.Result;
 import libs.errs.Error;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Embeddable
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Location extends ValueObject<Location> {
     private static final int MIN_COORDINATE = 1;
     private static final int MAX_COORDINATE = 10;
 
-    @Getter
+    @Column(name = "coordinate_x")
     private final int coordinate_x;
-    @Getter
-    private final int coordinate_y;
 
-    private Location(int coordinateX, int coordinateY) {
-        coordinate_x = coordinateX;
-        coordinate_y = coordinateY;
-    }
+    @Column(name = "coordinate_y")
+    private final int coordinate_y;
 
     public static Result<Location, Error> create(int coordinate_x, int coordinate_y) {
         var lessMinErrX = Guard.againstOutOfRange(coordinate_x, MIN_COORDINATE, MAX_COORDINATE, "coordinate_x");
         var lessMinErrY = Guard.againstOutOfRange(coordinate_y, MIN_COORDINATE, MAX_COORDINATE, "coordinate_y");
-        if (lessMinErrX != null) return Result.failure(lessMinErrX);
-        if (lessMinErrY != null) return Result.failure(lessMinErrY);
+        if (lessMinErrX != null)
+            return Result.failure(lessMinErrX);
+        if (lessMinErrY != null)
+            return Result.failure(lessMinErrY);
 
         return Result.success(new Location(coordinate_x, coordinate_y));
     }
@@ -40,7 +47,6 @@ public final class Location extends ValueObject<Location> {
         int verticalSteps = Math.abs(otherLocation.coordinate_y - this.coordinate_y);
         return horizontalSteps + verticalSteps;
     }
-
 
     @Override
     protected Iterable<Object> equalityComponents() {
