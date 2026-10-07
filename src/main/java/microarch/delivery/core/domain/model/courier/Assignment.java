@@ -54,7 +54,7 @@ public class Assignment extends BaseEntity<UUID> {
         return Result.success(new Assignment(orderId, volume, location));
     }
 
-    public UnitResult<Error> completeAssignment(Location location) {
+    public UnitResult<Error> complete(Location location) {
         var steps = this.location.countStepsTo(location);
         var cannotCompleteErr = againstGreaterThan(steps, MAX_STEPS_TO_COMPLETE, "location");
         if (cannotCompleteErr != null)

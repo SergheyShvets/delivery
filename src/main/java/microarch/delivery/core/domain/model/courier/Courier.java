@@ -75,17 +75,17 @@ public class Courier extends Aggregate<UUID> {
         return UnitResult.success();
     }
 
-    public UnitResult<Error> closeAssigned(UUID orderId) {
+    public UnitResult<Error> closeAssignment(UUID orderId) {
         var assignmentToClose = assignments.stream()
                 .filter(a -> orderId.equals(a.getOrderId()) && !a.checkIfCompleted()).findFirst().orElse(null);
 
         if (assignmentToClose == null)
             return UnitResult.failure(GeneralErrors.valueIsInvalid("orderId", orderId));
 
-        return assignmentToClose.completeAssignment(location);
+        return assignmentToClose.complete(location);
     }
 
-    public UnitResult<Error> setNewLocation(Location newLocation) {
+    public UnitResult<Error> moveToNewLocation(Location newLocation) {
         if (newLocation == null) {
             return UnitResult.failure(GeneralErrors.valueIsRequired("newLocation"));
         }

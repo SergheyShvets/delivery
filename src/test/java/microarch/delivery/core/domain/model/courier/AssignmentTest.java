@@ -48,7 +48,7 @@ public class AssignmentTest {
         assertThat(assignment.checkIfCompleted()).isFalse();
 
         var courierLocation = Location.mustCreate(4, 5);
-        assignment.completeAssignment(courierLocation);
+        assignment.complete(courierLocation);
         assertThat(assignment.checkIfCompleted()).isTrue();
     }
 
@@ -59,10 +59,10 @@ public class AssignmentTest {
         assertThat(assignment.checkIfCompleted()).isFalse();
 
         var courierLocation = Location.mustCreate(4, 5);
-        assignment.completeAssignment(courierLocation);
+        assignment.complete(courierLocation);
         assertThat(assignment.checkIfCompleted()).isTrue();
 
-        assignment.completeAssignment(courierLocation);
+        assignment.complete(courierLocation);
         assertThat(assignment.checkIfCompleted()).isTrue();
     }
 
@@ -73,7 +73,7 @@ public class AssignmentTest {
         assertThat(assignment.checkIfCompleted()).isFalse();
 
         var courierLocation = Location.mustCreate(4, 4);
-        assignment.completeAssignment(courierLocation);
+        assignment.complete(courierLocation);
         assertThat(assignment.checkIfCompleted()).isFalse();
     }
 

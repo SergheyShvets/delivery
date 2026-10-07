@@ -33,7 +33,8 @@ public class GetAllCourierQueryHandlerTest {
         for (int i = 0; i < response.length; i++) {
             assertThat(response[i].courierId()).isEqualTo(couriers[i].getId());
             assertThat(response[i].name()).isEqualTo(couriers[i].getName());
-            assertThat(response[i].location()).isEqualTo(couriers[i].getLocation());
+            assertThat(response[i].coordinate_x()).isEqualTo(couriers[i].getLocation().getCoordinate_x());
+            assertThat(response[i].coordinate_y()).isEqualTo(couriers[i].getLocation().getCoordinate_y());
         }
     }
 }

@@ -58,7 +58,6 @@ public class Order extends Aggregate<UUID> {
     public UnitResult<Error> completeOrder() {
         if (status != OrderStatus.ASSIGNED)
             return UnitResult.failure(GeneralErrors.valueIsRequired("OrderStatus.Assigned"));
-
         this.status = OrderStatus.COMPLETED;
         return UnitResult.success();
     }

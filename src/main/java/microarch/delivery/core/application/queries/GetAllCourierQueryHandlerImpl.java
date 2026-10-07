@@ -35,6 +35,11 @@ public class GetAllCourierQueryHandlerImpl implements GetAllCourierQueryHandler 
     }
 
     private GetAllCourierResponse mapToDto(Courier courier) {
-        return new GetAllCourierResponse(courier.getId(), courier.getName(), courier.getLocation());
+        return new GetAllCourierResponse(
+                courier.getId(),
+                courier.getName(),
+                courier.getLocation().getCoordinate_x(),
+                courier.getLocation().getCoordinate_y()
+        );
     }
 }

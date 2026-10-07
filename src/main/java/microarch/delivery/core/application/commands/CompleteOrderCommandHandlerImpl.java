@@ -4,7 +4,6 @@ import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
 import libs.errs.UnitResult;
-import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.ports.CourierRepository;
 import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -36,13 +35,13 @@ public class CompleteOrderCommandHandlerImpl implements CompleteOrderCommandHand
         }
         var courier = courierOpt.get();
 
-        var orderOpt = orderRepository.getOneWithStateCreated();
+        var orderOpt = orderRepository.findById(command.getOrderId());
         if (orderOpt.isEmpty()) {
             return UnitResult.failure(GeneralErrors.notFound("order with state created", orderOpt));
         }
         var order = orderOpt.get();
 
-        var closeAssignedRes = courier.closeAssigned(order.getId());
+        var closeAssignedRes = courier.closeAssignment(order.getId());
         if (closeAssignedRes.isFailure()) {
             return UnitResult.failure(closeAssignedRes.getError());
         }

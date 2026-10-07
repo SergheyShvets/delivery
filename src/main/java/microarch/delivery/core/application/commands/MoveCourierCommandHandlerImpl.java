@@ -3,15 +3,12 @@ package microarch.delivery.core.application.commands;
 import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
-import libs.errs.Result;
 import libs.errs.UnitResult;
-import microarch.delivery.core.domain.model.courier.Courier;
 import microarch.delivery.core.ports.CourierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler {
@@ -32,9 +29,9 @@ public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler 
         }
         var courier = courierOpt.get();
         var newLocation = command.getNewLocation();
-        var movedCourierErr = courier.setNewLocation(newLocation);
-        if (movedCourierErr.isFailure()) {
-            return UnitResult.failure(movedCourierErr.getError());
+        var movedCourierResult = courier.moveToNewLocation(newLocation);
+        if (movedCourierResult.isFailure()) {
+            return UnitResult.failure(movedCourierResult.getError());
         }
 
         courierRepository.update(courier);

@@ -3,14 +3,13 @@ package microarch.delivery.core.application.queries;
 import libs.errs.Error;
 import libs.errs.GeneralErrors;
 import libs.errs.Result;
-import microarch.delivery.core.domain.model.courier.Courier;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
-import microarch.delivery.core.ports.CourierRepository;
 import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.beans.Transient;
+import java.util.EnumSet;
 
 @Service
 public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrderQueryHandler {
@@ -24,7 +23,8 @@ public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrde
 
     @Transient
     public Result<GetNotCompletedOrdersResponse[], Error> handle() {
-        var orders = orderRepository.getAllByStatuses(OrderStatus.ASSIGNED, OrderStatus.CREATED);
+        var actualStatuses = EnumSet.of(OrderStatus.ASSIGNED, OrderStatus.CREATED);
+        var orders = orderRepository.findAllByStatusIn(actualStatuses);
         if (orders.isEmpty()) {
             return Result.failure(GeneralErrors.notFound("orders not found", orders));
         }
@@ -35,6 +35,10 @@ public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrde
     }
 
     private GetNotCompletedOrdersResponse mapToDto(Order order) {
-        return new GetNotCompletedOrdersResponse(order.getId(), order.getDeliveryLocation());
+        return new GetNotCompletedOrdersResponse(
+                order.getId(),
+                order.getDeliveryLocation().getCoordinate_x(),
+                order.getDeliveryLocation().getCoordinate_y()
+        );
     }
 }

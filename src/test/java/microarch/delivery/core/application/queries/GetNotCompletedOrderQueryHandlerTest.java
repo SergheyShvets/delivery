@@ -10,6 +10,7 @@ import microarch.delivery.core.ports.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,9 @@ public class GetNotCompletedOrderQueryHandlerTest {
 
         var filteredOrders = Arrays.stream(orders).filter(a -> a.getStatus() != OrderStatus.COMPLETED).toList();
 
-        when(orderRepository.getAllByStatuses(OrderStatus.ASSIGNED, OrderStatus.CREATED))
+        var actualStatuses = EnumSet.of(OrderStatus.ASSIGNED, OrderStatus.CREATED);
+
+        when(orderRepository.findAllByStatusIn(actualStatuses))
                 .thenReturn(filteredOrders);
 
         var handler = new GetNotCompletedOrderQueryHandlerImpl(orderRepository);
@@ -50,7 +53,8 @@ public class GetNotCompletedOrderQueryHandlerTest {
         assertThat(response.length).isEqualTo(filteredOrders.size());
         for (int i = 0; i < response.length; i++) {
             assertThat(response[i].orderId()).isEqualTo(filteredOrders.get(i).getId());
-            assertThat(response[i].deliveryLocation()).isEqualTo(filteredOrders.get(i).getDeliveryLocation());
+            assertThat(response[i].coordinate_x()).isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_x());
+            assertThat(response[i].coordinate_y()).isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_y());
         }
     }
 }

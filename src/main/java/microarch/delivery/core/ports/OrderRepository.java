@@ -3,6 +3,7 @@ package microarch.delivery.core.ports;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,5 +17,5 @@ public interface OrderRepository {
 
     Optional<Order> getOneWithStateCreated();
 
-    List<Order> getAllByStatuses(OrderStatus... statuses);
+    List<Order> findAllByStatusIn(Collection<OrderStatus> statuses);
 }

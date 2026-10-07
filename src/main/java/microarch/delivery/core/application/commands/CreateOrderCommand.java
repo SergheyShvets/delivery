@@ -6,6 +6,7 @@ import libs.errs.Result;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import microarch.delivery.core.domain.model.Address;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateOrderCommand {
     private final UUID basketId;
+    private final Address address;
     private final Location deliveryLocation;
     private final Volume volume;
 
@@ -32,6 +34,18 @@ public final class CreateOrderCommand {
             return Result.failure(err);
         }
 
+        var addressResult = Address.create(
+                country,
+                city,
+                street,
+                house,
+                apartment
+        );
+        if (addressResult.isFailure()) {
+            return Result.failure(addressResult.getError());
+        }
+        var address = addressResult.getValue();
+
         var deliveryLocation = Location.generateRandomLocation();
 
         var volumeResult = Volume.create(volume);
@@ -39,6 +53,6 @@ public final class CreateOrderCommand {
             return Result.failure(volumeResult.getError());
         }
 
-        return Result.success(new CreateOrderCommand(basketId, deliveryLocation, volumeResult.getValue()));
+        return Result.success(new CreateOrderCommand(basketId, address, deliveryLocation, volumeResult.getValue()));
     }
 }

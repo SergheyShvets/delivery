@@ -22,7 +22,7 @@ public final class CompleteOrderCommand {
         if (errCourierId != null) {
             return Result.failure(errCourierId);
         }
-        var errOrderId = Guard.againstNullOrEmpty(courierId, "courierId");
+        var errOrderId = Guard.againstNullOrEmpty(orderId, "orderId");
         if (errOrderId != null) {
             return Result.failure(errOrderId);
         }
