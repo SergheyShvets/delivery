@@ -17,33 +17,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 public class GetNotCompletedOrderQueryHandlerTest {
     private final OrderRepository orderRepository = mock(OrderRepository.class);
 
     @Test
     void GetAllCourierCommandHandler_ShouldBeSuccess_WhenParamsAreSuccess() {
-        var createdOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5)).getValue();
+        var createdOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5))
+                .getValue();
 
-        var assignedOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5)).getValue();
+        var assignedOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5))
+                .getValue();
         assignedOrder.assignOrder();
 
-        var completedOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5)).getValue();
+        var completedOrder = Order.create(UUID.randomUUID(), Location.generateRandomLocation(), Volume.mustCreate(5))
+                .getValue();
         completedOrder.assignOrder();
         completedOrder.completeOrder();
 
-        var orders = new Order[]{
-                createdOrder,
-                assignedOrder,
-                completedOrder
-        };
+        var orders = new Order[] { createdOrder, assignedOrder, completedOrder };
 
         var filteredOrders = Arrays.stream(orders).filter(a -> a.getStatus() != OrderStatus.COMPLETED).toList();
 
         var actualStatuses = EnumSet.of(OrderStatus.ASSIGNED, OrderStatus.CREATED);
 
-        when(orderRepository.findAllByStatusIn(actualStatuses))
-                .thenReturn(filteredOrders);
+        when(orderRepository.findAllByStatusIn(actualStatuses)).thenReturn(filteredOrders);
 
         var handler = new GetNotCompletedOrderQueryHandlerImpl(orderRepository);
         var responseResult = handler.handle();
@@ -53,8 +50,10 @@ public class GetNotCompletedOrderQueryHandlerTest {
         assertThat(response.length).isEqualTo(filteredOrders.size());
         for (int i = 0; i < response.length; i++) {
             assertThat(response[i].orderId()).isEqualTo(filteredOrders.get(i).getId());
-            assertThat(response[i].coordinate_x()).isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_x());
-            assertThat(response[i].coordinate_y()).isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_y());
+            assertThat(response[i].coordinate_x())
+                    .isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_x());
+            assertThat(response[i].coordinate_y())
+                    .isEqualTo(filteredOrders.get(i).getDeliveryLocation().getCoordinate_y());
         }
     }
 }

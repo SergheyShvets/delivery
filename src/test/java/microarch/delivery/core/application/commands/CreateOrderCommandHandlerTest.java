@@ -10,7 +10,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-
 public class CreateOrderCommandHandlerTest {
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
@@ -25,19 +24,8 @@ public class CreateOrderCommandHandlerTest {
         String apartment = "121";
         int volume = 5;
 
-        var handler = new CreateOrderCommandHandlerImpl(
-                orderRepository,
-                domainEventPublisher
-        );
-        var command = CreateOrderCommand.create(
-                basketId,
-                country,
-                city,
-                street,
-                house,
-                apartment,
-                volume
-        ).getValue();
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, domainEventPublisher);
+        var command = CreateOrderCommand.create(basketId, country, city, street, house, apartment, volume).getValue();
 
         var result = handler.handle(command);
 

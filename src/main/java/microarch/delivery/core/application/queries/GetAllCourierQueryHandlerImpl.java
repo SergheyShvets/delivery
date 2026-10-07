@@ -21,7 +21,6 @@ public class GetAllCourierQueryHandlerImpl implements GetAllCourierQueryHandler 
         this.courierRepository = courierRepository;
     }
 
-
     @Transient
     public Result<GetAllCourierResponse[], Error> handle() {
         var couriers = courierRepository.getAll();
@@ -35,11 +34,7 @@ public class GetAllCourierQueryHandlerImpl implements GetAllCourierQueryHandler 
     }
 
     private GetAllCourierResponse mapToDto(Courier courier) {
-        return new GetAllCourierResponse(
-                courier.getId(),
-                courier.getName(),
-                courier.getLocation().getCoordinate_x(),
-                courier.getLocation().getCoordinate_y()
-        );
+        return new GetAllCourierResponse(courier.getId(), courier.getName(), courier.getLocation().getCoordinate_x(),
+                courier.getLocation().getCoordinate_y());
     }
 }

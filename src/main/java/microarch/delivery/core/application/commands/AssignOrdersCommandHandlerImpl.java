@@ -14,18 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class AssignOrderCommandHandlerImpl implements AssignOrderCommandHandler {
+public class AssignOrdersCommandHandlerImpl implements AssignOrdersCommandHandler {
     private final OrderAllocationService orderAllocationService;
     private final CourierRepository courierRepository;
     private final OrderRepository orderRepository;
     private final DomainEventPublisher domainEventPublisher;
 
-    public AssignOrderCommandHandlerImpl(
-            OrderAllocationService orderAllocationService,
-            CourierRepository courierRepository,
-            OrderRepository orderRepository,
-            DomainEventPublisher domainEventPublisher
-    ) {
+    public AssignOrdersCommandHandlerImpl(OrderAllocationService orderAllocationService,
+            CourierRepository courierRepository, OrderRepository orderRepository,
+            DomainEventPublisher domainEventPublisher) {
         this.orderAllocationService = orderAllocationService;
         this.courierRepository = courierRepository;
         this.orderRepository = orderRepository;
@@ -45,7 +42,8 @@ public class AssignOrderCommandHandlerImpl implements AssignOrderCommandHandler 
             return UnitResult.failure(GeneralErrors.notFound("couriers not found", couriers));
         }
 
-        var allocatedCourierWithOrderRes = orderAllocationService.allocateOrder(order, couriers.toArray(Courier[]::new));
+        var allocatedCourierWithOrderRes = orderAllocationService.allocateOrder(order,
+                couriers.toArray(Courier[]::new));
         if (allocatedCourierWithOrderRes.isFailure()) {
             return UnitResult.failure(allocatedCourierWithOrderRes.getError());
         }

@@ -23,11 +23,7 @@ public class Courier extends Aggregate<UUID> {
     @Transient
     private final Volume maxVolume = Volume.mustCreate(20);
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "courier_id", nullable = false)
     private final Set<Assignment> assignments = new HashSet<>();
 

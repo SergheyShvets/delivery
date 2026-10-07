@@ -34,37 +34,19 @@ public class Address extends ValueObject<Address> {
     @Column(name = "apartment")
     private final String apartment;
 
-
-    public static Result<Address, Error> create(
-            String country,
-            String city,
-            String street,
-            String house,
-            String apartment
-    ) {
+    public static Result<Address, Error> create(String country, String city, String street, String house,
+            String apartment) {
         var countryErr = Guard.againstNullOrEmpty(country, "country");
         var cityErr = Guard.againstNullOrEmpty(city, "city");
         var streetErr = Guard.againstNullOrEmpty(street, "street");
         var houseErr = Guard.againstNullOrEmpty(house, "house");
         var apartmentErr = Guard.againstNullOrEmpty(apartment, "apartment");
 
-        var anyErrorResult = checkIfHasError(
-                countryErr,
-                cityErr,
-                streetErr,
-                houseErr,
-                apartmentErr
-        );
-        if (anyErrorResult.isFailure()) return Result.failure(anyErrorResult.getError());
+        var anyErrorResult = checkIfHasError(countryErr, cityErr, streetErr, houseErr, apartmentErr);
+        if (anyErrorResult.isFailure())
+            return Result.failure(anyErrorResult.getError());
 
-        return Result.success(new Address(
-                        country,
-                        city,
-                        street,
-                        house,
-                        apartment
-                )
-        );
+        return Result.success(new Address(country, city, street, house, apartment));
     }
 
     private static UnitResult<Error> checkIfHasError(Error... errors) {

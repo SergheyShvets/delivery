@@ -20,7 +20,6 @@ public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrde
         this.orderRepository = orderRepository;
     }
 
-
     @Transient
     public Result<GetNotCompletedOrdersResponse[], Error> handle() {
         var actualStatuses = EnumSet.of(OrderStatus.ASSIGNED, OrderStatus.CREATED);
@@ -35,10 +34,7 @@ public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrde
     }
 
     private GetNotCompletedOrdersResponse mapToDto(Order order) {
-        return new GetNotCompletedOrdersResponse(
-                order.getId(),
-                order.getDeliveryLocation().getCoordinate_x(),
-                order.getDeliveryLocation().getCoordinate_y()
-        );
+        return new GetNotCompletedOrdersResponse(order.getId(), order.getDeliveryLocation().getCoordinate_x(),
+                order.getDeliveryLocation().getCoordinate_y());
     }
 }
