@@ -17,15 +17,9 @@ public class CreateOrderController implements CreateOrderApi {
 
     @Override
     public ResponseEntity<CreateOrderResponse> createOrder(NewOrder newOrder) {
-        var CreateOrderCommandResult = CreateOrderCommand.create(
-                newOrder.getId(),
-                newOrder.getAddress().getCountry(),
-                newOrder.getAddress().getCity(),
-                newOrder.getAddress().getStreet(),
-                newOrder.getAddress().getHouse(),
-                newOrder.getAddress().getApartment(),
-                newOrder.getVolume()
-        );
+        var CreateOrderCommandResult = CreateOrderCommand.create(newOrder.getId(), newOrder.getAddress().getCountry(),
+                newOrder.getAddress().getCity(), newOrder.getAddress().getStreet(), newOrder.getAddress().getHouse(),
+                newOrder.getAddress().getApartment(), newOrder.getVolume());
         if (CreateOrderCommandResult.isFailure()) {
             return ResponseEntity.badRequest().build();
         }

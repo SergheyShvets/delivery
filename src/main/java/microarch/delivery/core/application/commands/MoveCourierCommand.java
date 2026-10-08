@@ -22,7 +22,7 @@ public final class MoveCourierCommand {
         if (errId != null) {
             return Result.failure(errId);
         }
-        var newLocationResult = Location.create(coordinate_x,coordinate_y);
+        var newLocationResult = Location.create(coordinate_x, coordinate_y);
         if (newLocationResult.isFailure()) {
             return Result.failure(newLocationResult.getError());
         }

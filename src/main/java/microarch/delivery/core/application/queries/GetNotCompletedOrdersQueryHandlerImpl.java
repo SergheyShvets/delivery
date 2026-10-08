@@ -1,7 +1,6 @@
 package microarch.delivery.core.application.queries;
 
 import libs.errs.Error;
-import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
@@ -24,9 +23,6 @@ public class GetNotCompletedOrdersQueryHandlerImpl implements GetNotCompletedOrd
     public Result<GetNotCompletedOrdersResponse[], Error> handle() {
         var actualStatuses = EnumSet.of(OrderStatus.ASSIGNED, OrderStatus.CREATED);
         var orders = orderRepository.findAllByStatusIn(actualStatuses);
-        if (orders.isEmpty()) {
-            return Result.failure(GeneralErrors.notFound("orders not found", orders));
-        }
 
         var result = orders.stream().map(this::mapToDto).toArray(GetNotCompletedOrdersResponse[]::new);
 
