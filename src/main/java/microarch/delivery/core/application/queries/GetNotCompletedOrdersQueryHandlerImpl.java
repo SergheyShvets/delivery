@@ -12,11 +12,11 @@ import java.beans.Transient;
 import java.util.EnumSet;
 
 @Service
-public class GetNotCompletedOrderQueryHandlerImpl implements GetNotCompletedOrderQueryHandler {
+public class GetNotCompletedOrdersQueryHandlerImpl implements GetNotCompletedOrdersQueryHandler {
 
     private final OrderRepository orderRepository;
 
-    public GetNotCompletedOrderQueryHandlerImpl(OrderRepository orderRepository) {
+    public GetNotCompletedOrdersQueryHandlerImpl(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 

@@ -2,10 +2,8 @@ package microarch.delivery.core.application.queries;
 
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
-import microarch.delivery.core.domain.model.courier.Courier;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
-import microarch.delivery.core.ports.CourierRepository;
 import microarch.delivery.core.ports.OrderRepository;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +40,7 @@ public class GetNotCompletedOrderQueryHandlerTest {
 
         when(orderRepository.findAllByStatusIn(actualStatuses)).thenReturn(filteredOrders);
 
-        var handler = new GetNotCompletedOrderQueryHandlerImpl(orderRepository);
+        var handler = new GetNotCompletedOrdersQueryHandlerImpl(orderRepository);
         var responseResult = handler.handle();
 
         assertThat(responseResult.isSuccess()).isTrue();
