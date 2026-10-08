@@ -66,7 +66,7 @@ public class OrderAllocationServiceTest {
 
         var result = allocatedService.allocateOrder(order, couriers);
         assertThat(result.isSuccess()).isTrue();
-        var courierWithOrder = couriers[1];
+        var courierWithOrder = result.getValue();
         assertThat(courierWithOrder.getAssignments().length == 1).isTrue();
         assertThat(order.getStatus() == OrderStatus.ASSIGNED).isTrue();
     }

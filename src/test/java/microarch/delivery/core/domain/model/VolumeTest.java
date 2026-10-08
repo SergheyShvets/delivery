@@ -27,7 +27,7 @@ public class VolumeTest {
     @ParameterizedTest
     @MethodSource("validLessMinValue")
     void shouldReturnSuccessWhenCorrectParams(int value) {
-        var incorrectResult = Volume.create(value);
-        assertThat(incorrectResult.isSuccess()).isTrue();
+        var correctResult = Volume.create(value);
+        assertThat(correctResult.isSuccess()).isTrue();
     }
 }

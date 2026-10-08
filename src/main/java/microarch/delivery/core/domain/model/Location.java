@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Random;
 
 @Embeddable
 @Getter
@@ -36,6 +37,13 @@ public final class Location extends ValueObject<Location> {
             return Result.failure(lessMinErrY);
 
         return Result.success(new Location(coordinate_x, coordinate_y));
+    }
+
+    public static Location generateRandomLocation() {
+        Random rn = new Random();
+        int coordinate_x = rn.nextInt(MAX_COORDINATE) + MIN_COORDINATE;
+        int coordinate_y = rn.nextInt(MAX_COORDINATE) + MIN_COORDINATE;
+        return create(coordinate_x, coordinate_y).getValue();
     }
 
     public static Location mustCreate(int coordinate_x, int coordinate_y) {

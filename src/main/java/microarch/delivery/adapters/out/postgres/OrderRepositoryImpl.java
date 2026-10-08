@@ -6,6 +6,7 @@ import microarch.delivery.core.ports.OrderRepository;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,12 +25,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean update(Order order) {
+    public void update(Order order) {
         if (jpa.existsById(order.getId())) {
             jpa.save(order);
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> getAllWithStateAssigned() {
-        return jpa.findAllByStatus(OrderStatus.ASSIGNED);
+    public List<Order> findAllByStatusIn(Collection<OrderStatus> statuses) {
+        return jpa.findAllByStatusIn(statuses);
     }
 }

@@ -76,7 +76,7 @@ public class CourierTest {
         var courier = result.getValue();
 
         addOrder(courier, order);
-        var errCloseAssigned = courier.closeAssigned(order.getId());
+        var errCloseAssigned = courier.closeAssignment(order.getId());
 
         assertThat(errCloseAssigned.isFailure()).isTrue();
     }
@@ -93,7 +93,7 @@ public class CourierTest {
         var courier = result.getValue();
 
         addOrder(courier, order);
-        var errCloseAssigned = courier.closeAssigned(order.getId());
+        var errCloseAssigned = courier.closeAssignment(order.getId());
 
         assertThat(errCloseAssigned.isSuccess()).isTrue();
     }
@@ -107,7 +107,7 @@ public class CourierTest {
         var result = Courier.create(name, location);
         var courier = result.getValue();
 
-        var errCloseAssigned = courier.setNewLocation(farLocation.getCoordinate_x(), farLocation.getCoordinate_y());
+        var errCloseAssigned = courier.moveToNewLocation(farLocation);
         assertThat(errCloseAssigned.isFailure()).isTrue();
     }
 
@@ -141,7 +141,7 @@ public class CourierTest {
         addOrder(courier, order);
 
         // In Start courier 1,1 is far from assign
-        var errCloseAssigned = courier.closeAssigned(order.getId());
+        var errCloseAssigned = courier.closeAssignment(order.getId());
         assertThat(errCloseAssigned.isFailure()).isTrue();
 
         moveUp(courier);
@@ -152,7 +152,7 @@ public class CourierTest {
         moveRight(courier);
         moveRight(courier);
         moveRight(courier);
-        var closeAssignRes = courier.closeAssigned(order.getId());
+        var closeAssignRes = courier.closeAssignment(order.getId());
         assertThat(courier.getLocation()).isEqualTo(order.getDeliveryLocation());
         assertThat(closeAssignRes.isSuccess()).isTrue();
     }
@@ -171,23 +171,22 @@ public class CourierTest {
     }
 
     private UnitResult<libs.errs.Error> moveUp(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x(),
-                courier.getLocation().getCoordinate_y() + 1);
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() + 1).getValue();
+        return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveDown(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x(),
-                courier.getLocation().getCoordinate_y() - 1);
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() - 1).getValue();
+        return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveLeft(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x() - 1,
-                courier.getLocation().getCoordinate_y());
-
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x() - 1, courier.getLocation().getCoordinate_y()).getValue();
+        return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<Error> moveRight(Courier courier) {
-        return courier.setNewLocation(courier.getLocation().getCoordinate_x() + 1,
-                courier.getLocation().getCoordinate_y());
+        var newLocation = Location.create(courier.getLocation().getCoordinate_x() + 1, courier.getLocation().getCoordinate_y()).getValue();
+        return courier.moveToNewLocation(newLocation);
     }
 }
