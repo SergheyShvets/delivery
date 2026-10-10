@@ -3,6 +3,7 @@ package microarch.delivery.adapters.in.http;
 import lombok.RequiredArgsConstructor;
 import microarch.delivery.adapters.in.http.api.CreateCourierApi;
 import microarch.delivery.adapters.in.http.model.CreateCourierResponse;
+import microarch.delivery.adapters.in.http.model.CreateOrderResponse;
 import microarch.delivery.adapters.in.http.model.NewCourier;
 import microarch.delivery.core.application.commands.CreateCourierCommand;
 import microarch.delivery.core.application.commands.CreateCourierCommandHandler;
@@ -27,6 +28,8 @@ public class CreateCourierController implements CreateCourierApi {
         if (handleCommandResult.isFailure()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        return ResponseEntity.ok().build();
+        var response = new CreateCourierResponse();
+        response.setCourierId(handleCommandResult.getValue());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

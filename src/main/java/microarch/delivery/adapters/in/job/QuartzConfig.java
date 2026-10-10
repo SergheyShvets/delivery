@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class QuartzConfig {
+    private final int INTERVAL_SEC = 1;
 
     @Bean
     public JobDetail assignOrdersJobDetail() {
@@ -15,7 +16,7 @@ public class QuartzConfig {
     @Bean
     public Trigger assignOrdersTrigger(JobDetail assignOrdersJobDetail) {
         return TriggerBuilder.newTrigger().forJob(assignOrdersJobDetail).withIdentity("assignOrdersTrigger")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(2) // каждые 2 сек
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_SEC)
                         .repeatForever())
                 .build();
     }
