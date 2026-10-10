@@ -17,11 +17,8 @@ public class CompleteOrderCommandHandlerImpl implements CompleteOrderCommandHand
     private final OrderRepository orderRepository;
     private final DomainEventPublisher domainEventPublisher;
 
-    public CompleteOrderCommandHandlerImpl(
-            CourierRepository courierRepository,
-            OrderRepository orderRepository,
-            DomainEventPublisher domainEventPublisher
-    ) {
+    public CompleteOrderCommandHandlerImpl(CourierRepository courierRepository, OrderRepository orderRepository,
+            DomainEventPublisher domainEventPublisher) {
         this.courierRepository = courierRepository;
         this.orderRepository = orderRepository;
         this.domainEventPublisher = domainEventPublisher;

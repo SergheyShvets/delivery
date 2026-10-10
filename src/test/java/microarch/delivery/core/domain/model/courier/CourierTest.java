@@ -171,22 +171,30 @@ public class CourierTest {
     }
 
     private UnitResult<libs.errs.Error> moveUp(Courier courier) {
-        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() + 1).getValue();
+        var newLocation = Location
+                .create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() + 1)
+                .getValue();
         return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveDown(Courier courier) {
-        var newLocation = Location.create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() - 1).getValue();
+        var newLocation = Location
+                .create(courier.getLocation().getCoordinate_x(), courier.getLocation().getCoordinate_y() - 1)
+                .getValue();
         return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<libs.errs.Error> moveLeft(Courier courier) {
-        var newLocation = Location.create(courier.getLocation().getCoordinate_x() - 1, courier.getLocation().getCoordinate_y()).getValue();
+        var newLocation = Location
+                .create(courier.getLocation().getCoordinate_x() - 1, courier.getLocation().getCoordinate_y())
+                .getValue();
         return courier.moveToNewLocation(newLocation);
     }
 
     private UnitResult<Error> moveRight(Courier courier) {
-        var newLocation = Location.create(courier.getLocation().getCoordinate_x() + 1, courier.getLocation().getCoordinate_y()).getValue();
+        var newLocation = Location
+                .create(courier.getLocation().getCoordinate_x() + 1, courier.getLocation().getCoordinate_y())
+                .getValue();
         return courier.moveToNewLocation(newLocation);
     }
 }

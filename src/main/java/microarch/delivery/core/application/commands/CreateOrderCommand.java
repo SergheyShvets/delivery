@@ -20,27 +20,14 @@ public final class CreateOrderCommand {
     private final Location deliveryLocation;
     private final Volume volume;
 
-    public static Result<CreateOrderCommand, Error> create(
-            UUID basketId,
-            String country,
-            String city,
-            String street,
-            String house,
-            String apartment,
-            int volume
-    ) {
+    public static Result<CreateOrderCommand, Error> create(UUID basketId, String country, String city, String street,
+            String house, String apartment, int volume) {
         var err = Guard.againstNullOrEmpty(basketId, "basketId");
         if (err != null) {
             return Result.failure(err);
         }
 
-        var addressResult = Address.create(
-                country,
-                city,
-                street,
-                house,
-                apartment
-        );
+        var addressResult = Address.create(country, city, street, house, apartment);
         if (addressResult.isFailure()) {
             return Result.failure(addressResult.getError());
         }

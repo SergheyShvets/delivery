@@ -40,7 +40,7 @@ public class OrderRepositoryIntegrationTest extends PostgresIntegrationTestBase 
         var deliveryLocaleResult = Location.create(5, 5).getValue();
         var volumeResult = Volume.create(5).getValue();
         var order = Order.create(basketId, deliveryLocaleResult, volumeResult).getValue();
-        //Not added will return error
+        // Not added will return error
         var loadedEmpty = repository.findById(basketId);
         assertThat(loadedEmpty).isEmpty();
 

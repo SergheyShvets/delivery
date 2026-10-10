@@ -16,7 +16,7 @@ public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler 
     private final DomainEventPublisher domainEventPublisher;
 
     public MoveCourierCommandHandlerImpl(CourierRepository courierRepository,
-                                         DomainEventPublisher domainEventPublisher) {
+            DomainEventPublisher domainEventPublisher) {
         this.courierRepository = courierRepository;
         this.domainEventPublisher = domainEventPublisher;
     }

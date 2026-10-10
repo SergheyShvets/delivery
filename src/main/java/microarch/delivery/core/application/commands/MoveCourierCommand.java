@@ -17,14 +17,15 @@ public final class MoveCourierCommand {
     private final UUID courierId;
     private final Location newLocation;
 
-    public static Result<MoveCourierCommand, Error> create(UUID courierId, Location newLocation) {
+    public static Result<MoveCourierCommand, Error> create(UUID courierId, int coordinate_x, int coordinate_y) {
         var errId = Guard.againstNullOrEmpty(courierId, "courierId");
         if (errId != null) {
             return Result.failure(errId);
         }
-        if (newLocation == null) {
-            return Result.failure(GeneralErrors.valueIsRequired("newLocation"));
+        var newLocationResult = Location.create(coordinate_x, coordinate_y);
+        if (newLocationResult.isFailure()) {
+            return Result.failure(newLocationResult.getError());
         }
-        return Result.success(new MoveCourierCommand(courierId, newLocation));
+        return Result.success(new MoveCourierCommand(courierId, newLocationResult.getValue()));
     }
 }

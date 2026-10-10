@@ -16,7 +16,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-
 public class CompleteOrderCommandHandlerTest {
     private final CourierRepository courierRepository = mock(CourierRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
@@ -33,26 +32,20 @@ public class CompleteOrderCommandHandlerTest {
         Order order = Order.create(UUID.randomUUID(), location, volume).getValue();
 
         // set order on courier;
-        courier.addOrder(order.getId(),order.getVolume(),order.getDeliveryLocation());
+        courier.addOrder(order.getId(), order.getVolume(), order.getDeliveryLocation());
         order.assignOrder();
 
         when(courierRepository.findById(courier.getId())).thenReturn(Optional.of(courier));
         when(orderRepository.getOneWithStateCreated()).thenReturn(Optional.of(order));
 
-
-        var handler = new CompleteOrderCommandHandlerImpl(
-                courierRepository,
-                orderRepository,
-                domainEventPublisher
-        );
+        var handler = new CompleteOrderCommandHandlerImpl(courierRepository, orderRepository, domainEventPublisher);
         var command = CompleteOrderCommand.create(courier.getId(), order.getId()).getValue();
         var result = handler.handle(command);
-
 
         assertThat(result.isSuccess()).isTrue();
         verify(courierRepository).update(courier);
         verify(orderRepository).update(order);
-        //Check if completed order
+        // Check if completed order
         assertThat(courierRepository.findById(courier.getId()).get().getAssignments()[0].checkIfCompleted()).isTrue();
         assertThat(orderRepository.getOneWithStateCreated().get().getStatus()).isEqualTo(OrderStatus.COMPLETED);
 

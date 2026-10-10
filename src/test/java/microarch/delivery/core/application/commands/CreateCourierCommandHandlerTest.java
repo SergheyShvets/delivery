@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-
 public class CreateCourierCommandHandlerTest {
     private final CourierRepository courierRepository = mock(CourierRepository.class);
     private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
@@ -16,10 +15,7 @@ public class CreateCourierCommandHandlerTest {
     void CreateCourierCommandHandler_ShouldBeSuccess_WhenParamsAreSuccess() {
         String name = "Alex";
 
-        var handler = new CreateCourierCommandHandlerImpl(
-                courierRepository,
-                domainEventPublisher
-        );
+        var handler = new CreateCourierCommandHandlerImpl(courierRepository, domainEventPublisher);
         var command = CreateCourierCommand.create(name).getValue();
         var result = handler.handle(command);
 
