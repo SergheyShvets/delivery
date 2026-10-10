@@ -17,7 +17,6 @@ import java.util.UUID;
 public final class CreateOrderCommand {
     private final UUID basketId;
     private final Address address;
-    private final Location deliveryLocation;
     private final Volume volume;
 
     public static Result<CreateOrderCommand, Error> create(UUID basketId, String country, String city, String street,
@@ -33,13 +32,11 @@ public final class CreateOrderCommand {
         }
         var address = addressResult.getValue();
 
-        var deliveryLocation = Location.generateRandomLocation();
-
         var volumeResult = Volume.create(volume);
         if (volumeResult.isFailure()) {
             return Result.failure(volumeResult.getError());
         }
 
-        return Result.success(new CreateOrderCommand(basketId, address, deliveryLocation, volumeResult.getValue()));
+        return Result.success(new CreateOrderCommand(basketId, address, volumeResult.getValue()));
     }
 }

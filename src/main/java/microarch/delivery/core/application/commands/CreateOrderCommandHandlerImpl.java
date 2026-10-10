@@ -6,6 +6,7 @@ import libs.errs.Error;
 import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import microarch.delivery.core.domain.model.order.Order;
+import microarch.delivery.core.ports.GeoClient;
 import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,16 @@ import java.util.UUID;
 @Service
 public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler {
     private final OrderRepository orderRepository;
+    private final GeoClient geoClient;
     private final DomainEventPublisher domainEventPublisher;
 
-    public CreateOrderCommandHandlerImpl(OrderRepository orderRepository, DomainEventPublisher domainEventPublisher) {
+    public CreateOrderCommandHandlerImpl(
+            OrderRepository orderRepository,
+            GeoClient geoClient,
+            DomainEventPublisher domainEventPublisher
+    ) {
         this.orderRepository = orderRepository;
+        this.geoClient = geoClient;
         this.domainEventPublisher = domainEventPublisher;
     }
 
@@ -29,7 +36,12 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
             return Result.failure(GeneralErrors.valueIsInvalid("order is exist", command.getBasketId()));
         }
 
-        var orderResult = Order.create(command.getBasketId(), command.getDeliveryLocation(), command.getVolume());
+        var deliveryLocationRes = geoClient.getLocation(command.getAddress());
+        if (deliveryLocationRes.isFailure()){
+            return Result.failure(deliveryLocationRes.getError());
+        }
+
+        var orderResult = Order.create(command.getBasketId(), deliveryLocationRes.getValue(), command.getVolume());
         if (orderResult.isFailure()) {
             return Result.failure(orderResult.getError());
         }
