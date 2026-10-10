@@ -3,10 +3,8 @@ package microarch.delivery.core.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
+import libs.errs.*;
 import libs.errs.Error;
-import libs.errs.Guard;
-import libs.errs.Result;
-import libs.errs.UnitResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,20 +40,11 @@ public class Address extends ValueObject<Address> {
         var houseErr = Guard.againstNullOrEmpty(house, "house");
         var apartmentErr = Guard.againstNullOrEmpty(apartment, "apartment");
 
-        var anyErrorResult = checkIfHasError(countryErr, cityErr, streetErr, houseErr, apartmentErr);
-        if (anyErrorResult.isFailure())
-            return Result.failure(anyErrorResult.getError());
+        var anyErrorResult = Guard.combine(countryErr, cityErr, streetErr, houseErr, apartmentErr);
+        if (anyErrorResult != null)
+            return Result.failure(anyErrorResult);
 
         return Result.success(new Address(country, city, street, house, apartment));
-    }
-
-    private static UnitResult<Error> checkIfHasError(Error... errors) {
-        for (Error error : errors) {
-            if (error != null) {
-                return UnitResult.failure(error);
-            }
-        }
-        return UnitResult.success();
     }
 
     @Override

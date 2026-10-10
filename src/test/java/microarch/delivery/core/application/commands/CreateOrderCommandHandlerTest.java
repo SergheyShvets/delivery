@@ -1,6 +1,8 @@
 package microarch.delivery.core.application.commands;
 
 import libs.ddd.DomainEventPublisher;
+import libs.errs.Error;
+import libs.errs.Result;
 import microarch.delivery.core.domain.model.Address;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.ports.GeoClient;
@@ -27,14 +29,35 @@ public class CreateOrderCommandHandlerTest {
         String house = "18";
         String apartment = "121";
         int volume = 5;
-        var address = Address.create(country,city,street,house,apartment).getValue();
+        var address = Address.create(country, city, street, house, apartment).getValue();
 
         var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient, domainEventPublisher);
         var command = CreateOrderCommand.create(basketId, country, city, street, house, apartment, volume).getValue();
 
-        when(geoClient.getLocation(address)).thenReturn(Location.mustCreate(5,5));
+        when(geoClient.getLocation(address)).thenReturn(Result.success(Location.mustCreate(5, 5)));
         var result = handler.handle(command);
 
         assertThat(result.isSuccess()).isTrue();
+    }
+
+    @Test
+    void CreateOrderCommandHandler_ShouldBeError_WhenLoadingFromGeoReturnedError() {
+        UUID basketId = UUID.randomUUID();
+        String country = "Russia";
+        String city = "Moscow";
+        String street = "lenina";
+        String house = "18";
+        String apartment = "121";
+        int volume = 5;
+        var address = Address.create(country, city, street, house, apartment).getValue();
+        var geoError = Error.of("mock error","");
+
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient, domainEventPublisher);
+        var command = CreateOrderCommand.create(basketId, country, city, street, house, apartment, volume).getValue();
+
+        when(geoClient.getLocation(address)).thenReturn(Result.failure(geoError));
+        var result = handler.handle(command);
+
+        assertThat(result.isFailure()).isTrue();
     }
 }

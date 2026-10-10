@@ -36,9 +36,12 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
             return Result.failure(GeneralErrors.valueIsInvalid("order is exist", command.getBasketId()));
         }
 
-        var deliveryLocation = geoClient.getLocation(command.getAddress());
+        var deliveryLocationRes = geoClient.getLocation(command.getAddress());
+        if (deliveryLocationRes.isFailure()){
+            return Result.failure(deliveryLocationRes.getError());
+        }
 
-        var orderResult = Order.create(command.getBasketId(), deliveryLocation, command.getVolume());
+        var orderResult = Order.create(command.getBasketId(), deliveryLocationRes.getValue(), command.getVolume());
         if (orderResult.isFailure()) {
             return Result.failure(orderResult.getError());
         }
