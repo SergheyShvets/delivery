@@ -19,11 +19,8 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
     private final GeoClient geoClient;
     private final DomainEventPublisher domainEventPublisher;
 
-    public CreateOrderCommandHandlerImpl(
-            OrderRepository orderRepository,
-            GeoClient geoClient,
-            DomainEventPublisher domainEventPublisher
-    ) {
+    public CreateOrderCommandHandlerImpl(OrderRepository orderRepository, GeoClient geoClient,
+            DomainEventPublisher domainEventPublisher) {
         this.orderRepository = orderRepository;
         this.geoClient = geoClient;
         this.domainEventPublisher = domainEventPublisher;
@@ -37,7 +34,7 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
         }
 
         var deliveryLocationRes = geoClient.getLocation(command.getAddress());
-        if (deliveryLocationRes.isFailure()){
+        if (deliveryLocationRes.isFailure()) {
             return Result.failure(deliveryLocationRes.getError());
         }
 

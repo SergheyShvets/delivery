@@ -44,7 +44,8 @@ public class GeoClientImpl implements GeoClient {
 
         var request = GeoProto.GetGeolocationRequest.newBuilder().setStreet(address.getStreet()).build();
         try {
-            var responceLocation = stub.withDeadlineAfter(DURATION_SEC, TimeUnit.SECONDS).getGeolocation(request).getLocation();
+            var responceLocation = stub.withDeadlineAfter(DURATION_SEC, TimeUnit.SECONDS).getGeolocation(request)
+                    .getLocation();
             return Result.success(Location.mustCreate(responceLocation.getX(), responceLocation.getY()));
         } catch (StatusRuntimeException ex) {
             return Result.failure(Error.of(ex.toString(), ex.getMessage()));

@@ -50,7 +50,7 @@ public class CreateOrderCommandHandlerTest {
         String apartment = "121";
         int volume = 5;
         var address = Address.create(country, city, street, house, apartment).getValue();
-        var geoError = Error.of("mock error","");
+        var geoError = Error.of("mock error", "");
 
         var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient, domainEventPublisher);
         var command = CreateOrderCommand.create(basketId, country, city, street, house, apartment, volume).getValue();
