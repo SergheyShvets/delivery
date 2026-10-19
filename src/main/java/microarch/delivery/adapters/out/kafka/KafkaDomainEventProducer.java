@@ -2,10 +2,10 @@ package microarch.delivery.adapters.out.kafka;
 
 import libs.ddd.DomainEvent;
 import lombok.RequiredArgsConstructor;
+import microarch.delivery.core.ports.DomainEventProducer;
 import org.springframework.beans.factory.annotation.Value;
 import microarch.delivery.core.domain.model.order.events.OrderAssignedDomainEvent;
 import microarch.delivery.core.domain.model.order.events.OrderCompletedDomainEvent;
-import microarch.delivery.core.ports.DomainEventProducer;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import queues.order.events.OrderEventsProto.OrderCompletedIntegrationEvent;
@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class KafkaDomainEventProducer implements DomainEventProducer {
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
-    @Value("${app.kafka.order-events-topic")
+    @Value("${app.kafka.order-events-topic}")
     private String topic;
 
 
