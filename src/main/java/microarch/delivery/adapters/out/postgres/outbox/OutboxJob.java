@@ -5,19 +5,22 @@ import libs.ddd.DomainEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import microarch.delivery.core.ports.DomainEventProducer;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Job {
+@DisallowConcurrentExecution
+public class OutboxJob implements Job {
     private final DomainEventProducer producer;
     private final OutboxJpaRepository jpa;
     private final ObjectMapper objectMapper;
 
-    @Scheduled(fixedDelay = 1_000)
-    public void run() {
+    @Override
+    public void execute(JobExecutionContext context) {
         var outboxMessages = jpa.findUnprocessedMessages();
         for (var outboxMessage : outboxMessages) {
             try {
