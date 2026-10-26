@@ -1,6 +1,8 @@
 package microarch.delivery.adapters.in.job;
 
+import microarch.delivery.adapters.out.postgres.outbox.OutboxJob;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,10 +16,23 @@ public class QuartzConfig {
     }
 
     @Bean
-    public Trigger assignOrdersTrigger(JobDetail assignOrdersJobDetail) {
+    public Trigger assignOrdersTrigger(@Qualifier("assignOrdersJobDetail") JobDetail assignOrdersJobDetail) {
         return TriggerBuilder.newTrigger().forJob(assignOrdersJobDetail).withIdentity("assignOrdersTrigger")
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(INTERVAL_SEC)
                         .repeatForever())
+                .build();
+    }
+
+    @Bean
+    public JobDetail outboxJobDetail() {
+        return JobBuilder.newJob(OutboxJob.class).withIdentity("outboxJob").storeDurably().build();
+    }
+
+    @Bean
+    public Trigger outboxTrigger(@Qualifier("outboxJobDetail") JobDetail outboxJobDetail) {
+        return TriggerBuilder.newTrigger().forJob(outboxJobDetail).withIdentity("outboxTrigger")
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(1).repeatForever()
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
                 .build();
     }
 }
